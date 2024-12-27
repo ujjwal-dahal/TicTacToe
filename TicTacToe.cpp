@@ -5,26 +5,37 @@
 
 char board[3][3];
 int currentPlayer = 1;
+int cellHeight = 150; 
+int cellWidth = 150;  
+int topMargin = 100;  
+int leftMargin = 100; 
+
+int playerTurnXCoord = 550;
+int playerTurnYCoord = 30;
+
+int conclusionAnnouncXCoord = 600;
+int conclusionAnnouncYCoord = 350;
 
 // Initialize the graphics window
 void windowOpen() {
     int width = 1000, height = 600;
-    initwindow(width, height, "Tic Tac Toe Game");
+    initwindow(width, height, "Tic Tac Toe");
 }
 
 // Hamro Loading Window
 void loadingWindow() {
     settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 7);
-    outtextxy(330, 250, "Loading...");
-    rectangle(330, 350, 610, 370);
+    outtextxy(280, 250, "TIC TAC TOE");
+    
+    
+    rectangle(280, 350, 700, 370);
 
-    for (int i = 0; i <= 280; i += 5) {
-        setfillstyle(SOLID_FILL, RED);
-        bar(330, 351, 330 + i, 369);
+    for (int i = 0; i <= 420; i += 5) {
+        setfillstyle(SOLID_FILL, YELLOW);
+        bar(280, 352, 280 + i, 369);
         delay(50);
     }
-
-    delay(500);
+    delay(400);
     cleardevice();
 }
 
@@ -42,31 +53,32 @@ void initBoard() {
 void drawGrid() {
     cleardevice();
     
-    // Vertical Lines
-    line(200, 100, 200, 450);  // First vertical line
-    line(400, 100, 500, 450);  // Second vertical line
-  
-    // Horizontal Lines
-    line(100, 250, 600, 250);  // First horizontal line
-    line(100, 350, 600, 350);  // Second horizontal line
+    // Draw vertical and horizontal lines
+    for (int i = 1; i < 3; i++) {
+        line(leftMargin + i * cellWidth, topMargin, leftMargin + i * cellWidth, topMargin + 3 * cellHeight); // Vertical lines
+        line(leftMargin, topMargin + i * cellHeight, leftMargin + 3 * cellWidth, topMargin + i * cellHeight); // Horizontal lines
+    }
 }
 
 // Draw X or O in the grid
 void drawXO(int row, int col, char symbol) {
+	
+    
     // Calculate the X and Y position to center the symbol in the cell
-    int x = 150 + col * 100;  // X position (column)
-    int y = 200 + row * 100;  // Y position (row)
-    std :: cout << "X Position : "<<x << " & Y Positon : " << y << std::endl;
+   	int x = leftMargin + col * cellWidth + cellWidth / 2; 
+    int y = topMargin + row * cellHeight + cellHeight / 2; 
+    
+//    std :: cout << "X Position : "<<x << " & Y Positon : " << y << std::endl;
 
-    settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);  // Set the font size
+    settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);  
 
-    char str[2];  // Array to hold the character and null terminator
-    str[0] = symbol;  // Assign the character
-    str[1] = '\0';  // Null-terminate the string
+    char str[2]; 
+    str[0] = symbol;  
+    str[1] = '\0';  
 
-    // Position the text slightly adjusted to center it within the grid cell
+    
     setcolor(YELLOW);
-    outtextxy(x - 20, y - 30, str);  // Adjusted the x and y to center the text better
+    outtextxy(x - textwidth(str) / 2, y - textheight(str) / 2, str); 
 }
 
 
@@ -86,30 +98,33 @@ void updateBoard() {
 
 // Check for a winner
 bool checkWinner() {
+	
     // Check rows and columns
     for (int i = 0; i < 3; i++) {
     	// Row match
         if (board[i][0] != ' ' && board[i][0] == board[i][1] && board[i][1] == board[i][2])
             {
             	return true;
-			  }  
+			}  
             
         // Column match
         if (board[0][i] != ' ' && board[0][i] == board[1][i] && board[1][i] == board[2][i])
             {
             	return true; 
-			 } 
+			} 
     }
 
     // Check diagonals
     
     // Main diagonal
     if (board[0][0] != ' ' && board[0][0] == board[1][1] && board[1][1] == board[2][2])
-       { return true;  
+       { 
+	   return true;  
 	   }
         
     // Anti-diagonal
-    if (board[0][2] != ' ' && board[0][2] == board[1][1] && board[1][1] == board[2][0]){
+    if (board[0][2] != ' ' && board[0][2] == board[1][1] && board[1][1] == board[2][0])
+	{
         return true;
 	}
 
@@ -120,7 +135,7 @@ bool checkWinner() {
 bool checkDraw() {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            if (board[i][j] == ' ')  // Empty cell found
+            if (board[i][j] == ' ') 
                 return false;
         }
     }
@@ -129,36 +144,44 @@ bool checkDraw() {
 
 // Handle user input (mouse clicks)
 void handleInput() {
+		//Player Turn Card
+		setcolor(YELLOW);
+    	settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 3);
+    	char playerTurn[50];
+    	sprintf(playerTurn, "Turn : Player %d",currentPlayer);
+    	outtextxy(playerTurnXCoord,playerTurnYCoord,playerTurn);
     while (1) {
         if (ismouseclick(WM_LBUTTONDOWN)) {
             int x = mousex(), y = mousey();
-            std::cout << "Mouse X : "<<x << " & Mouse Y :" << y << std::endl;
+//            std::cout << "Mouse X : "<<x << " & Mouse Y :" << y << std::endl;
             clearmouseclick(WM_LBUTTONDOWN);
 
-            // Calculate the row and column based on click position
-            int row = (y - 100) / 100;
-            int col = (x - 100) / 100;
 
-            // Check if the click is inside the board and the cell is empty
+            // Calculate the row and column based on click position
+            int row = (y - topMargin) / cellHeight;
+            int col = (x - leftMargin) / cellWidth;
+
+            // Click gareko Thau Inside Board chaki chain Check garne
             if (row >= 0 && row < 3 && col >= 0 && col < 3 && board[row][col] == ' ') {
-                // Update the board
+                
+				// Update the board
                 board[row][col] = (currentPlayer == 1) ? 'X' : 'O';
                 drawXO(row, col, board[row][col]);
                 
                 //Player ko Turn Dekhaune
                 if(currentPlayer==1){
                 	setcolor(YELLOW);
-                settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 3);
-                char playerTurn[50];
-                sprintf(playerTurn, "Turn : Player %d",currentPlayer+1);
-                outtextxy(550,30,playerTurn);
+                	settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 3);
+                	char playerTurn[50];
+                	sprintf(playerTurn, "Turn : Player %d",currentPlayer+1);
+                	outtextxy(playerTurnXCoord,playerTurnYCoord,playerTurn);
 				}
 				else if(currentPlayer==2){
 					setcolor(YELLOW);
-                settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 3);
-                char playerTurn[50];
-                sprintf(playerTurn, "Turn : Player %d",currentPlayer-1);
-                outtextxy(550,30,playerTurn);
+                	settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 3);
+                	char playerTurn[50];
+                	sprintf(playerTurn, "Turn : Player %d",currentPlayer-1);
+                	outtextxy(playerTurnXCoord,playerTurnYCoord,playerTurn);
 				}
 
                 // Check for winner or draw
@@ -166,12 +189,12 @@ void handleInput() {
                     settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
                     char winMessage[50];
                     sprintf(winMessage, "Player %d Wins!", currentPlayer);
-                    outtextxy(550, 330, winMessage);
+                    outtextxy(conclusionAnnouncXCoord, conclusionAnnouncYCoord, winMessage);
                     delay(2000);
                     return;
                 } else if (checkDraw()) {
                     settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
-                    outtextxy(550, 330, "It's a Draw!");
+                    outtextxy(conclusionAnnouncXCoord, conclusionAnnouncYCoord, "It's a Draw!");
                     delay(2000);
                     return;
                 }
@@ -227,9 +250,9 @@ void aboutUsWindow() {
 bool exitWindow() {
     cleardevice();
     settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
-    outtextxy(330, 100, "Are you sure you want to exit?");
-    setcolor(RED);
-    outtextxy(270, 300, "Press Y to confirm, N to cancel");
+    outtextxy(190, 100, "Are you sure you want to exit?");
+    setcolor(YELLOW);
+    outtextxy(190, 300, "Press Y to confirm, N to cancel");
 
     while (1) {
         if (kbhit()) {
@@ -246,9 +269,9 @@ bool exitWindow() {
 
 // Draw Menu Items
 void drawMenu(int selectedOption) {
-    cleardevice();  // Clear screen before drawing
+    cleardevice(); 
     settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 7);
-    outtextxy(330, 50, "Tic Tac Toe");
+    outtextxy(370, 50, "Menu");
 
     char* menuItems[] = { "1. Start Game", "2. Instructions", "3. About Us", "4. Exit" };
     int yPos[] = { 200, 250, 300, 350 };
@@ -272,7 +295,7 @@ void gameMenu() {
     while (true) {
         if (kbhit()) {
             char ch = getch();
-            if (ch == 0 || ch == 224) {  // Special key
+            if (ch == 0 || ch == 224) {  
                 ch = getch();
                 switch (ch) {
                 case 72:  // Up arrow
@@ -284,7 +307,7 @@ void gameMenu() {
                     break;
                 }
                 drawMenu(selectedOption);
-            } else if (ch == 13) {  // Enter key
+            } else if (ch == 13) {  
                 switch (selectedOption) {
                 case 0:
                     gameWindow();
@@ -304,7 +327,7 @@ void gameMenu() {
                 drawMenu(selectedOption);  // Redraw menu after return
             }
         }
-        delay(100);  // Prevent CPU overuse
+        delay(100);  
     }
 }
 
