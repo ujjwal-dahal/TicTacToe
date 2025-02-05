@@ -217,13 +217,69 @@ void gameWindow() {
     handleInput();
 }
 
-// Instruction Window
 void instructionsWindow() {
     cleardevice();
-    settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
-    outtextxy(330, 100, "Instructions Window");
-    outtextxy(330, 300, "Press B to go back");
-    while (1) {
+    int startX = getmaxx()/4;
+    int currentY = 0;
+    int lineSpacing = 20;
+    int sectionSpacing = 40;
+
+    struct InstructionSection {
+        char* heading;
+        int headingSize;
+        char* body[10]; 
+        int bodySize; //fontsize
+        int bodyLineCount;
+    };
+
+    InstructionSection sections[] = {
+        {
+            "How To Play", 5,
+            {
+                "Player 1 plays as X, and Player 2 plays as O.",
+                "Use the mouse to click on a cell to place your mark.",
+                "The game automatically switches turns after each move."
+            }, 3, 3
+        },
+        {
+            "Control", 5,
+            {
+                "Mouse Click : Place your mark on the board",
+                "Up/Down Arrow Keys : Navigate the menu.",
+                "Press 'B' : Go back to the menu from the instructions window.",
+                "Enter Key : Select a menu option."
+            }, 3, 4
+        },
+        {
+            "Winning the Game", 5,
+            {
+                "A player wins if they have three of their marks (X or O) in a row, column, or diagonal",
+                "If all cells are filled and no one has won, the game ends in a draw."
+            }, 3, 2
+        }
+    };
+
+ 
+    for (int s = 0; s < 3; s++) {
+        // Draw heading
+        setcolor(YELLOW);
+        settextstyle(SANS_SERIF_FONT, HORIZ_DIR, sections[s].headingSize);
+        outtextxy(startX, currentY, (char*)(sections[s].heading));
+        currentY += textheight(sections[s].heading) + lineSpacing;
+
+        // Draw body lines
+        
+        settextstyle(SANS_SERIF_FONT, HORIZ_DIR, sections[s].bodySize);
+        for (int i = 0; i < sections[s].bodyLineCount; i++) {
+        	setcolor(WHITE);
+            outtextxy(startX, currentY, (char*)(sections[s].body[i]));
+            currentY += textheight(sections[s].body[i]) + lineSpacing / 2;
+        }
+        currentY += sectionSpacing;
+    }
+
+    // Input handling loop
+    while (true) {
         if (kbhit() && getch() == 'b') {
             cleardevice();
             return;
@@ -235,9 +291,62 @@ void instructionsWindow() {
 void aboutUsWindow() {
     cleardevice();
     settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
-    outtextxy(330, 100, "About Us Window");
+    int x = 330; //yo chai sabai text ko x position
+
+    int aboutY = 0;       
+    int toolsY = 600;
     
-    outtextxy(320, 300, "Press B to go back");
+   //yo loop ko ekchoti move hunchha
+    while (aboutY < 100 || toolsY > 300) {
+        cleardevice();
+        setcolor(WHITE);
+
+        // yesko final fix position samma move garne
+        if (aboutY < 100) aboutY += 5;
+        outtextxy(x, aboutY, "About Us");
+
+        // yesko ni final position sammai move garne,mathi launa each step ma 5 ghataune position bata
+        if (toolsY > 300) toolsY -= 5;
+        settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
+        outtextxy(x, toolsY, "Tools Used");
+
+        delay(50);
+    }
+
+    //yo loop ko ekchoti sangai move hunchhan
+    int bodyY = -200;      // Body text starts above screen
+    int detailsY = 640;    // Other details start below screen
+    while (bodyY < 140 || detailsY > 340) {
+        cleardevice();
+        setcolor(WHITE);
+
+        //agadi ko loop ko text yesma clear garda nahatos bhaner,feri text dekhako
+        settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
+        setcolor(YELLOW);
+        outtextxy(x, 100, "About Us");
+        outtextxy(x, 300, "Tools Used");
+
+		setcolor(WHITE);
+        if (bodyY < 140) bodyY += 5;
+        settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 3);
+        outtextxy(x, bodyY, "Simple Tictactoe game.");
+        outtextxy(x, bodyY + 40, "Developed by Ujjwal and Suman");
+        outtextxy(x, bodyY + 80, "For Computer Graphics Project.");
+
+        if (detailsY > 340) detailsY -= 5;
+        settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 3);
+        outtextxy(x, detailsY, "C++");
+        outtextxy(x, detailsY + 40, "Graphics.h");
+        outtextxy(x, detailsY + 80, "Git and Github");
+
+        delay(50);
+    }
+
+
+    settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
+    outtextxy(320, 500, "Press B to go back");
+
+    // Wait for user input
     while (1) {
         if (kbhit() && getch() == 'b') {
             cleardevice();
@@ -274,7 +383,7 @@ void drawMenu(int selectedOption) {
     outtextxy(370, 50, "Menu");
 
     char* menuItems[] = { "1. Start Game", "2. Instructions", "3. About Us", "4. Exit" };
-    int yPos[] = { 200, 250, 300, 350 };
+    int yPos[] = { 200, 250, 300, 350 }; //yeslai hatauna sakinx , direct top margin ni use garne , add gardai jane
 
     for (int i = 0; i < 4; i++) {
         if (i == selectedOption) {
@@ -283,7 +392,7 @@ void drawMenu(int selectedOption) {
             setcolor(WHITE);
         }
         settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
-        outtextxy(330, yPos[i], menuItems[i]);
+        outtextxy(330, 2*topMargin+i*50, menuItems[i]);
     }
     setcolor(WHITE);  // Reset color after menu drawing
 }
