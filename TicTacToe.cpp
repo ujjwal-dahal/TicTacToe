@@ -430,8 +430,8 @@ void aboutUsWindow() {
     settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 5);
     int x = 330; //yo chai sabai text ko x position
 
-    int aboutY = 0;       
-    int toolsY = 600;
+    int aboutY = 0; //starting position of about us text       
+    int toolsY = 600; //starting position of tools used text
     
    //yo loop ko ekchoti move hunchha
     while (aboutY < 100 || toolsY > 300) {
@@ -452,7 +452,7 @@ void aboutUsWindow() {
 
     //yo loop ko ekchoti sangai move hunchhan
     int bodyY = -200;      // Body text starts above screen
-    int detailsY = 640;    // Other details start below screen
+    int detailsY = 640;    // Content of tools used start below screen
     while (bodyY < 140 || detailsY > 340) {
         cleardevice();
         setcolor(WHITE);
@@ -520,7 +520,7 @@ void drawMenu(int selectedOption) {
     outtextxy(370, 50, "Menu");
 
     char* menuItems[] = { "1. Two Player Game","2.Play Vs Computer", "3. Instructions", "4. About Us", "5. Exit" };
-    //int yPos[] = { 200, 250, 300, 350 }; //yeslai hatauna sakinx , direct top margin ni use garne , add gardai jane
+    //int yPos[] = { 200, 250, 300, 350 }; //yeslai hatauna sakinx , direct top margin mai add gardai jane
 
     for (int i = 0; i < 5; i++) {
         if (i == selectedOption) {
